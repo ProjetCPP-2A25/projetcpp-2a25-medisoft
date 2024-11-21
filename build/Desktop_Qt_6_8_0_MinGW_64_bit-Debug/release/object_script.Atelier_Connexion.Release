@@ -1,0 +1,14 @@
+release/MAILER.o
+release/SMS.o
+release/main.o
+release/mainwindow.o
+release/connection.o
+release/patient.o
+release/qrc_back.o
+release/qrc_logo.o
+release/qrc_maiil.o
+release/qrc_notiff.o
+release/qrc_pdf.o
+release/qrc_ref.o
+release/qrc_stat.o
+release/moc_mainwindow.o

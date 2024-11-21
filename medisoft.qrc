@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/medisoft">
+        <file>medisoft.png</file>
+    </qresource>
+</RCC>

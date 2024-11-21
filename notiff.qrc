@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/notifff"/>
+    <qresource prefix="/notiff">
+        <file>notif.PNG</file>
+    </qresource>
+</RCC>

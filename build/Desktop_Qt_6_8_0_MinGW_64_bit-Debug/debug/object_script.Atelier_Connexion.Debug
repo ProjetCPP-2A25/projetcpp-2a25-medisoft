@@ -1,0 +1,14 @@
+debug/MAILER.o
+debug/SMS.o
+debug/main.o
+debug/mainwindow.o
+debug/connection.o
+debug/patient.o
+debug/qrc_back.o
+debug/qrc_logo.o
+debug/qrc_maiil.o
+debug/qrc_notiff.o
+debug/qrc_pdf.o
+debug/qrc_ref.o
+debug/qrc_stat.o
+debug/moc_mainwindow.o

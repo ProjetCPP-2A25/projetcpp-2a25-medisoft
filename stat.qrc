@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/statt">
+        <file>stat.PNG</file>
+    </qresource>
+</RCC>

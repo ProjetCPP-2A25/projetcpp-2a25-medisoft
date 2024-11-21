@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/done">
+        <file>donee.PNG</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/refr">
+        <file>refreshhh.PNG</file>
+    </qresource>
+</RCC>

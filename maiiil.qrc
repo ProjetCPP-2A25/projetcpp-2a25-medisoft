@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/maiiiil">
+        <file>mail.PNG</file>
+    </qresource>
+</RCC>

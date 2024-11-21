@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/pdff">
+        <file>pdf.PNG</file>
+    </qresource>
+</RCC>
