@@ -11,6 +11,8 @@ QT += printsupport
 //QT += core gui sql location
 QT       += charts
 QT += quick quickwidgets
+//QT += quick location positioning quickwidgets
+
 
 
 

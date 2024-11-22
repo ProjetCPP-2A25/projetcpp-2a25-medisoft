@@ -13,41 +13,129 @@
 #include <QDialog>
 
 
-void MainWindow::on_pushButton_showMap_clicked() {
-    QMap<QString, QPointF> locationData;
+void MainWindow::showMap()
+{
+    try {
+        // Create a new dialog to host the map
+        QDialog *mapDialog = new QDialog(this);
+        mapDialog->setWindowTitle("Supplier Locations");
+        mapDialog->resize(800, 600);
 
-    QSqlQuery query("SELECT NOM, LATITUDE, LONGITUDE FROM FOURNISSEUR");
-    while (query.next()) {
-        QString name = query.value(0).toString(); // Supplier name
-        double latitude = query.value(1).toDouble(); // Latitude
-        double longitude = query.value(2).toDouble(); // Longitude
-        locationData[name] = QPointF(latitude, longitude);
+        // Create the Quick Widget that will display the map
+        QQuickWidget *quickWidget = new QQuickWidget();
+        quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+
+        // Set up the layout
+        QVBoxLayout *layout = new QVBoxLayout(mapDialog);
+        layout->addWidget(quickWidget);
+        mapDialog->setLayout(layout);
+
+        // Get supplier coordinates from database
+        QSqlQuery query;
+        query.prepare("SELECT NOM, LATITUDE, LONGITUDE FROM FOURNISSEUR");
+
+        if (query.exec()) {
+            // Create lists to hold the data
+            QVariantList names;
+            QVariantList latitudes;
+            QVariantList longitudes;
+
+            while (query.next()) {
+                names.append(query.value(0).toString());
+                latitudes.append(query.value(1).toDouble());
+                longitudes.append(query.value(2).toDouble());
+            }
+
+            // Create a context to pass data to QML
+            QQmlContext *ctxt = quickWidget->rootContext();
+            ctxt->setContextProperty("supplierNames", names);
+            ctxt->setContextProperty("supplierLatitudes", latitudes);
+            ctxt->setContextProperty("supplierLongitudes", longitudes);
+        }
+
+        // Create updated map.qml content
+        QString qmlContent = R"(
+            import QtQuick 2.15
+            //import QtLocation 5.15
+            import QtPositioning 5.15
+
+            Item {
+                Plugin {
+                    id: mapPlugin
+                    name: "osm"
+                }
+
+                Map {
+                    id: map
+                    anchors.fill: parent
+                    plugin: mapPlugin
+                    center: QtPositioning.coordinate(36.8065, 10.1815) // Tunis coordinates
+                    zoomLevel: 10
+
+                    // Add markers for each supplier
+                    MapItemView {
+                        model: supplierNames.length
+                        delegate: MapQuickItem {
+                            coordinate: QtPositioning.coordinate(
+                                supplierLatitudes[index],
+                                supplierLongitudes[index]
+                            )
+                            anchorPoint.x: rect.width/2
+                            anchorPoint.y: rect.height
+
+                            sourceItem: Rectangle {
+                                id: rect
+                                width: 20
+                                height: 20
+                                radius: 10
+                                color: "red"
+                                border.color: "black"
+                                border.width: 2
+
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "S"
+                                    color: "white"
+                                    font.bold: true
+                                }
+
+                                // Tooltip on hover
+                                MouseArea {
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    ToolTip.visible: containsMouse
+                                    ToolTip.text: supplierNames[index]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        )";
+
+        // Save the QML content to a temporary file
+        QTemporaryFile tempFile;
+        if (tempFile.open()) {
+            tempFile.write(qmlContent.toUtf8());
+            tempFile.close();
+
+            // Set the source of the QuickWidget to the temporary file
+            quickWidget->setSource(QUrl::fromLocalFile(tempFile.fileName()));
+
+            // Show the dialog
+            mapDialog->exec();
+        }
+
+        // Cleanup
+        delete mapDialog;
     }
-
-    // Ensure the QMap is converted to QVariantMap
-    QVariantMap variantMap;
-    for (const QString &key : locationData.keys()) {
-        QPointF point = locationData[key];
-        variantMap[key] = QVariant::fromValue(QVariantMap{{"x", point.x()}, {"y", point.y()}});
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "Error", QString("Map error: %1").arg(e.what()));
     }
-
-    QQuickWidget *mapWidget = new QQuickWidget();
-    mapWidget->setSource(QUrl(QStringLiteral("qrc:/map.qml")));
-    mapWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
-
-    QQmlContext *context = mapWidget->rootContext();
-    context->setContextProperty("locationData", variantMap);
-
-    QDialog *mapDialog = new QDialog(this);
-    QVBoxLayout *layout = new QVBoxLayout(mapDialog);
-    layout->addWidget(mapWidget);
-    mapDialog->setLayout(layout);
-
-    mapDialog->setWindowTitle("Map View");
-    mapDialog->resize(800, 600);
-    mapDialog->exec();
+    catch (...) {
+        QMessageBox::critical(this, "Error", "An unknown error occurred while showing the map");
+    }
 }
-
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -76,8 +164,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
               connect(ui->radioButton_nom, &QPushButton::clicked, this, &MainWindow::on_radioButton_nom_clicked);
               connect(ui->radioButton_etoile, &QPushButton::clicked, this, &MainWindow::on_radioButton_etoile_clicked);
-              connect(ui->pushButton_showMap, &QPushButton::clicked, this, &MainWindow::on_pushButton_showMap_clicked);
-              connect(ui->on_pushButton_showStats1, &QPushButton::clicked, this, &MainWindow::on_pushButton_showStats1_clicked);
+              connect(ui->pushButton_showMap, &QPushButton::clicked, this, &MainWindow::showMap);
+
+              connect(ui->on_pushButton_showStats1, &QPushButton::clicked, this, &MainWindow::on_pushButton_showStats2_clicked);
 
 
 
@@ -294,64 +383,58 @@ void MainWindow::on_pushButton_generatePdf_clicked() {
 
     QMessageBox::information(this, "PDF Generated", "PDF saved successfully.");
 }
-void MainWindow::on_pushButton_showStats1_clicked()
+void MainWindow::on_pushButton_showStats2_clicked()
 {
-    // 1. Fetch Data (example using your existing functions):
-    int totalQty = ftmp.totalQuantity();
-    double avgPrice = ftmp.averageDeliveryPrice();
+    try {
+        // Get data from database
+        int totalQty = ftmp.totalQuantity();
+        double avgPrice = ftmp.averageDeliveryPrice();
 
+        // Create the pie chart
+        QPieSeries *series = new QPieSeries();
 
-    // 2. Create Chart:
-    QChart *chart = new QChart();
-    chart->setTitle("Supplier Statistics");
+        // Add slices with values and labels
+        series->append("Total Quantity", totalQty);
+        series->append("Avg Delivery Price", avgPrice);
 
-    // 3. Create Series (BarSeries for bar chart)
-    QBarSeries *series = new QBarSeries();
+        // Make slices more visible
+        QPieSlice *slice1 = series->slices().at(0);
+        slice1->setLabelVisible(true);
+        slice1->setBrush(QColor(Qt::blue));
 
-    // 4. Create Sets (data points for the bars):
-    QBarSet *quantitySet = new QBarSet("Total Quantity");
-    *quantitySet << totalQty;  // Add data to the set
+        QPieSlice *slice2 = series->slices().at(1);
+        slice2->setLabelVisible(true);
+        slice2->setBrush(QColor(Qt::red));
 
-    QBarSet *priceSet = new QBarSet("Average Delivery Price");
-    *priceSet << avgPrice;
+        // Create chart and set properties
+        QChart *chart = new QChart();
+        chart->addSeries(series);
+        chart->setTitle("Supplier Statistics (Pie Chart)");
+        chart->legend()->setVisible(true);
+        chart->legend()->setAlignment(Qt::AlignBottom);
 
-    series->append(quantitySet);
-    series->append(priceSet);
+        // Create chart view
+        QChartView *chartView = new QChartView(chart);
+        chartView->setRenderHint(QPainter::Antialiasing);
 
-    chart->addSeries(series);
+        // Create and setup dialog
+        QDialog *chartDialog = new QDialog(this);
+        QVBoxLayout *layout = new QVBoxLayout(chartDialog);
+        layout->addWidget(chartView);
+        chartDialog->setLayout(layout);
+        chartDialog->setWindowTitle("Statistics Pie Chart");
+        chartDialog->resize(800, 600);
 
+        // Show dialog
+        chartDialog->exec();
 
-    // 5. Create Axes (optional but recommended for clarity):
-    QStringList categories;
-    categories << ""; // Placeholder category (you might have actual categories)
-    QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    axisX->append(categories);
-    chart->addAxis(axisX, Qt::AlignBottom);
-    series->attachAxis(axisX);
-
-    QValueAxis *axisY = new QValueAxis();
-    chart->addAxis(axisY, Qt::AlignLeft);
-    series->attachAxis(axisY);
-
-
-
-
-    // 6. Display the Chart in a ChartView:
-    QChartView *chartView = new QChartView(chart);
-    chartView->setRenderHint(QPainter::Antialiasing); // For smoother rendering
-
-
-
-    // Display in a dialog (recommended):
-    QDialog *chartDialog = new QDialog(this);
-    QVBoxLayout *layout = new QVBoxLayout(chartDialog);
-    layout->addWidget(chartView);
-    chartDialog->setLayout(layout);
-    chartDialog->setWindowTitle("Statistics Chart");
-    chartDialog->resize(800, 600);  // Adjust size as needed
-    chartDialog->exec();
-
-    // Memory cleanup (important!):
-    delete chartDialog; // Delete the dialog to avoid memory leaks
-
+        // Cleanup
+        delete chartDialog;
+    }
+    catch (const std::exception& e) {
+        QMessageBox::critical(this, "Error", QString("An error occurred: %1").arg(e.what()));
+    }
+    catch (...) {
+        QMessageBox::critical(this, "Error", "An unknown error occurred");
+    }
 }

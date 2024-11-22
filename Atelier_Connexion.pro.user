@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2024-11-22T02:25:37. -->
+<!-- Written by QtCreator 7.0.0, 2024-11-22T04:09:12. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -74,7 +74,7 @@
     <value type="QString">-fno-delayed-template-parsing</value>
    </valuelist>
    <value type="bool" key="ClangCodeModel.UseGlobalConfig">false</value>
-   <value type="QString" key="ClangCodeModel.WarningConfigId">{5f2c40b3-9d0d-4c85-b320-c74f60c00b94}</value>
+   <value type="QString" key="ClangCodeModel.WarningConfigId">Builtin.BuildSystem</value>
    <valuemap type="QVariantMap" key="ClangTools">
     <value type="bool" key="ClangTools.AnalyzeOpenFiles">true</value>
     <value type="bool" key="ClangTools.BuildBeforeAnalysis">true</value>
@@ -257,8 +257,9 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/temp_CPP/Atelier_Connexion.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/temp_CPP/Atelier_Connexion.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">Atelier_Connexion2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:C:/projetCPP/Atelier_Connexion.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/projetCPP/Atelier_Connexion.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>

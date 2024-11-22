@@ -8,6 +8,11 @@
 //#include <QWebEngineView>
 #include <QDesktopServices>
 #include <QtCharts>
+#include <QChartView>
+#include <QPieSeries>
+#include <QPieSlice>
+#include <QQuickWidget>
+#include <QQmlContext>
 
 
 
@@ -41,8 +46,8 @@ void on_lineEdit_search_textChanged(const QString &text);
 void on_radioButton_etoile_clicked();
 void on_radioButton_nom_clicked();
 QString generateHtmlFromData(QAbstractItemModel* model);
-void on_pushButton_showMap_clicked() ;
-void on_pushButton_showStats1_clicked();
+void showMap();
+void on_pushButton_showStats2_clicked();
 
 
 private:
