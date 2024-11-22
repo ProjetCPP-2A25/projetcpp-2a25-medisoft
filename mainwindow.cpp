@@ -16,115 +16,48 @@
 void MainWindow::showMap()
 {
     try {
-        // Create a new dialog to host the map
+        // Create dialog
         QDialog *mapDialog = new QDialog(this);
-        mapDialog->setWindowTitle("Supplier Locations");
+        mapDialog->setWindowTitle("Supplier Locations Map");
         mapDialog->resize(800, 600);
 
-        // Create the Quick Widget that will display the map
-        QQuickWidget *quickWidget = new QQuickWidget();
-        quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
+        // Create custom map widget
+        SimpleMapWidget *mapWidget = new SimpleMapWidget(mapDialog);
 
-        // Set up the layout
-        QVBoxLayout *layout = new QVBoxLayout(mapDialog);
-        layout->addWidget(quickWidget);
-        mapDialog->setLayout(layout);
+        // Create layout
+        QVBoxLayout *mainLayout = new QVBoxLayout(mapDialog);
+        mainLayout->addWidget(mapWidget);
 
-        // Get supplier coordinates from database
+        // Add legend
+        QLabel *legendLabel = new QLabel("🔴 - Supplier Location");
+        mainLayout->addWidget(legendLabel);
+
+        // Get supplier data from database
         QSqlQuery query;
         query.prepare("SELECT NOM, LATITUDE, LONGITUDE FROM FOURNISSEUR");
 
         if (query.exec()) {
-            // Create lists to hold the data
-            QVariantList names;
-            QVariantList latitudes;
-            QVariantList longitudes;
-
             while (query.next()) {
-                names.append(query.value(0).toString());
-                latitudes.append(query.value(1).toDouble());
-                longitudes.append(query.value(2).toDouble());
+                QString name = query.value(0).toString();
+                double lat = query.value(1).toDouble();
+                double lon = query.value(2).toDouble();
+                mapWidget->addLocation(name, lat, lon);
             }
-
-            // Create a context to pass data to QML
-            QQmlContext *ctxt = quickWidget->rootContext();
-            ctxt->setContextProperty("supplierNames", names);
-            ctxt->setContextProperty("supplierLatitudes", latitudes);
-            ctxt->setContextProperty("supplierLongitudes", longitudes);
         }
 
-        // Create updated map.qml content
-        QString qmlContent = R"(
-            import QtQuick 2.15
-            //import QtLocation 5.15
-            import QtPositioning 5.15
+        // Add zoom controls
+        QHBoxLayout *zoomLayout = new QHBoxLayout();
+        QPushButton *zoomInBtn = new QPushButton("+");
+        QPushButton *zoomOutBtn = new QPushButton("-");
 
-            Item {
-                Plugin {
-                    id: mapPlugin
-                    name: "osm"
-                }
+        zoomLayout->addWidget(zoomInBtn);
+        zoomLayout->addWidget(zoomOutBtn);
+        zoomLayout->addStretch();
 
-                Map {
-                    id: map
-                    anchors.fill: parent
-                    plugin: mapPlugin
-                    center: QtPositioning.coordinate(36.8065, 10.1815) // Tunis coordinates
-                    zoomLevel: 10
+        mainLayout->addLayout(zoomLayout);
 
-                    // Add markers for each supplier
-                    MapItemView {
-                        model: supplierNames.length
-                        delegate: MapQuickItem {
-                            coordinate: QtPositioning.coordinate(
-                                supplierLatitudes[index],
-                                supplierLongitudes[index]
-                            )
-                            anchorPoint.x: rect.width/2
-                            anchorPoint.y: rect.height
-
-                            sourceItem: Rectangle {
-                                id: rect
-                                width: 20
-                                height: 20
-                                radius: 10
-                                color: "red"
-                                border.color: "black"
-                                border.width: 2
-
-                                Text {
-                                    anchors.centerIn: parent
-                                    text: "S"
-                                    color: "white"
-                                    font.bold: true
-                                }
-
-                                // Tooltip on hover
-                                MouseArea {
-                                    anchors.fill: parent
-                                    hoverEnabled: true
-                                    ToolTip.visible: containsMouse
-                                    ToolTip.text: supplierNames[index]
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        )";
-
-        // Save the QML content to a temporary file
-        QTemporaryFile tempFile;
-        if (tempFile.open()) {
-            tempFile.write(qmlContent.toUtf8());
-            tempFile.close();
-
-            // Set the source of the QuickWidget to the temporary file
-            quickWidget->setSource(QUrl::fromLocalFile(tempFile.fileName()));
-
-            // Show the dialog
-            mapDialog->exec();
-        }
+        // Show the dialog
+        mapDialog->exec();
 
         // Cleanup
         delete mapDialog;
@@ -136,7 +69,6 @@ void MainWindow::showMap()
         QMessageBox::critical(this, "Error", "An unknown error occurred while showing the map");
     }
 }
-
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
