@@ -40,7 +40,7 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>251</width>
+        <width>241</width>
         <height>331</height>
        </rect>
       </property>
@@ -90,7 +90,7 @@
        <property name="geometry">
         <rect>
          <x>90</x>
-         <y>90</y>
+         <y>80</y>
          <width>111</width>
          <height>22</height>
         </rect>
@@ -116,7 +116,7 @@
        <property name="geometry">
         <rect>
          <x>20</x>
-         <y>170</y>
+         <y>180</y>
          <width>47</width>
          <height>16</height>
         </rect>
@@ -129,9 +129,9 @@
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>60</y>
+         <y>50</y>
          <width>221</width>
-         <height>261</height>
+         <height>271</height>
         </rect>
        </property>
        <property name="styleSheet">
@@ -187,20 +187,23 @@ background-color: rgb(207, 207, 207);</string>
       <widget class="QSpinBox" name="spinBox">
        <property name="geometry">
         <rect>
-         <x>200</x>
+         <x>180</x>
          <y>10</y>
          <width>51</width>
-         <height>51</height>
+         <height>31</height>
         </rect>
        </property>
+       <property name="cursor">
+        <cursorShape>OpenHandCursor</cursorShape>
+       </property>
        <property name="acceptDrops">
-        <bool>true</bool>
+        <bool>false</bool>
        </property>
        <property name="whatsThis">
         <string>ajouter des stars pour evaluer</string>
        </property>
        <property name="buttonSymbols">
-        <enum>QAbstractSpinBox::NoButtons</enum>
+        <enum>QAbstractSpinBox::UpDownArrows</enum>
        </property>
        <property name="maximum">
         <number>5</number>
@@ -252,7 +255,7 @@ background-color: rgb(207, 207, 207);</string>
        <property name="geometry">
         <rect>
          <x>90</x>
-         <y>60</y>
+         <y>50</y>
          <width>111</width>
          <height>20</height>
         </rect>
@@ -277,8 +280,8 @@ background-color: rgb(207, 207, 207);</string>
       <widget class="QLabel" name="label_6">
        <property name="geometry">
         <rect>
-         <x>20</x>
-         <y>200</y>
+         <x>30</x>
+         <y>210</y>
          <width>47</width>
          <height>13</height>
         </rect>
@@ -403,7 +406,7 @@ background-color: rgb(207, 207, 207);</string>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>0</x>
+        <x>10</x>
         <y>0</y>
         <width>1041</width>
         <height>371</height>
@@ -523,40 +526,40 @@ background-color: rgb(207, 207, 207);</string>
      <widget class="QPushButton" name="radioButton_nom">
       <property name="geometry">
        <rect>
-        <x>384</x>
-        <y>30</y>
+        <x>380</x>
+        <y>20</y>
         <width>101</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>radioButton_nom</string>
+       <string>TRIER par nom</string>
       </property>
      </widget>
      <widget class="QPushButton" name="radioButton_etoile">
       <property name="geometry">
        <rect>
-        <x>514</x>
-        <y>30</y>
+        <x>510</x>
+        <y>20</y>
         <width>111</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>radioButton_etoile</string>
+       <string>Trier par rating</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_showMap">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>280</x>
         <y>20</y>
         <width>75</width>
         <height>24</height>
        </rect>
       </property>
       <property name="text">
-       <string>pushButton_showMap</string>
+       <string>MAP</string>
       </property>
      </widget>
      <widget class="QPushButton" name="on_pushButton_showStats1">
@@ -569,7 +572,33 @@ background-color: rgb(207, 207, 207);</string>
        </rect>
       </property>
       <property name="text">
-       <string>on_pushButton_showStats1</string>
+       <string>STATS</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="radioButton_nom_2">
+      <property name="geometry">
+       <rect>
+        <x>380</x>
+        <y>50</y>
+        <width>111</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TRIER par nom desc</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="radioButton_nom_3">
+      <property name="geometry">
+       <rect>
+        <x>510</x>
+        <y>50</y>
+        <width>131</width>
+        <height>24</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>TRIER par etoile desc</string>
       </property>
      </widget>
      <zorder>label_5</zorder>
@@ -586,6 +615,8 @@ background-color: rgb(207, 207, 207);</string>
      <zorder>radioButton_etoile</zorder>
      <zorder>pushButton_showMap</zorder>
      <zorder>on_pushButton_showStats1</zorder>
+     <zorder>radioButton_nom_2</zorder>
+     <zorder>radioButton_nom_3</zorder>
     </widget>
    </widget>
   </widget>

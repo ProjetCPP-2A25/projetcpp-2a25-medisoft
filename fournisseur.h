@@ -66,6 +66,8 @@ public:
     QSqlQueryModel* afficher();
     QSqlQueryModel* affichere();
     QSqlQueryModel* affichern();
+     QSqlQueryModel* afficherdn();
+      QSqlQueryModel* afficherde();
     bool supprimer(int IDF);
     bool modifier();
     QSqlQueryModel* rechercherParNom(const QString& nom);

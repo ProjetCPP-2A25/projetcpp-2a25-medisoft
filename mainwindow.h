@@ -49,6 +49,8 @@ private slots:
 void on_tableView_clicked(const QModelIndex &index);
 void on_lineEdit_search_textChanged(const QString &text);
 void on_radioButton_etoile_clicked();
+void on_radioButton_deetoile_clicked();
+void on_radioButton_denom_clicked();
 void on_radioButton_nom_clicked();
 QString generateHtmlFromData(QAbstractItemModel* model);
 void showMap();

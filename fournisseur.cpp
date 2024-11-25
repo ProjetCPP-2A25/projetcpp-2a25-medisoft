@@ -109,6 +109,54 @@ QSqlQueryModel* Fournisseur::affichere()
 
     return model;
 }
+QSqlQueryModel* Fournisseur::afficherdn()
+{
+    QSqlQueryModel* model = new QSqlQueryModel();
+    model->setQuery("SELECT * FROM FOURNISSEUR ORDER BY RATING DESC");
+
+    if (model->lastError().isValid()) {
+        qDebug() << "Error in afficher query:" << model->lastError().text();
+        return nullptr;
+    }
+
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("ID Fournisseur"));
+    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Quantité"));
+    model->setHeaderData(2, Qt::Horizontal, QObject::tr("NOM"));
+    model->setHeaderData(3, Qt::Horizontal, QObject::tr("PréNOM"));
+    model->setHeaderData(4, Qt::Horizontal, QObject::tr("MAIL"));
+    model->setHeaderData(5, Qt::Horizontal, QObject::tr("Prix Livraison"));
+    model->setHeaderData(6, Qt::Horizontal, QObject::tr("Rating")); // Add header for rating
+    model->setHeaderData(7, Qt::Horizontal, QObject::tr("LONGITUDE"));
+     model->setHeaderData(8, Qt::Horizontal, QObject::tr("LATITUDE"));
+
+
+    return model;
+}
+
+QSqlQueryModel* Fournisseur::afficherde()
+{
+    QSqlQueryModel* model = new QSqlQueryModel();
+    model->setQuery("SELECT * FROM FOURNISSEUR ORDER BY NOM DESC");
+
+    if (model->lastError().isValid()) {
+        qDebug() << "Error in afficher query:" << model->lastError().text();
+        return nullptr;
+    }
+
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("ID Fournisseur"));
+    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Quantité"));
+    model->setHeaderData(2, Qt::Horizontal, QObject::tr("NOM"));
+    model->setHeaderData(3, Qt::Horizontal, QObject::tr("PréNOM"));
+    model->setHeaderData(4, Qt::Horizontal, QObject::tr("MAIL"));
+    model->setHeaderData(5, Qt::Horizontal, QObject::tr("Prix Livraison"));
+    model->setHeaderData(6, Qt::Horizontal, QObject::tr("Rating")); // Add header for rating
+    model->setHeaderData(7, Qt::Horizontal, QObject::tr("LONGITUDE"));
+     model->setHeaderData(8, Qt::Horizontal, QObject::tr("LATITUDE"));
+
+
+    return model;
+}
+
 
 
 bool Fournisseur::modifier()

@@ -7,10 +7,7 @@
 #include <QPageSize>
 #include <QMap>
 //#include "GraphView.h"
-#include <QQuickWidget>
-#include <QQmlContext>
-#include <QVBoxLayout>
-#include <QDialog>
+
 
 
 void MainWindow::showMap()
@@ -91,11 +88,14 @@ MainWindow::MainWindow(QWidget *parent) :
             connect(ui->pushButton_actualiser, &QPushButton::clicked, this, &MainWindow::on_pushButton_actualiser_clicked);
 
             ui->tabWidget->setCurrentIndex(1); // Set to tab 2 at startup
-            connect(ui->tableView, &QTableView::clicked, this, &MainWindow::on_tableView_clicked); // Connect the signal
+            connect(ui->tableView, &QTableView::doubleClicked, this, &MainWindow::on_tableView_clicked); // Connect the signal
 
 
               connect(ui->radioButton_nom, &QPushButton::clicked, this, &MainWindow::on_radioButton_nom_clicked);
-              connect(ui->radioButton_etoile, &QPushButton::clicked, this, &MainWindow::on_radioButton_etoile_clicked);
+              connect(ui->radioButton_etoile, &QPushButton::clicked, this, &MainWindow::on_radioButton_deetoile_clicked);
+
+              connect(ui->radioButton_nom_2, &QPushButton::clicked, this, &MainWindow::on_radioButton_denom_clicked);
+              connect(ui->radioButton_nom_3, &QPushButton::clicked, this, &MainWindow::on_radioButton_etoile_clicked);
               connect(ui->pushButton_showMap, &QPushButton::clicked, this, &MainWindow::showMap);
 
               connect(ui->on_pushButton_showStats1, &QPushButton::clicked, this, &MainWindow::on_pushButton_showStats2_clicked);
@@ -260,6 +260,13 @@ void MainWindow::on_pushButton_modifier_clicked()
 
 void MainWindow::on_pushButton_actualiser_clicked()
 {
+    ui->lineEdit_mail->clear();
+        ui->lineEdit_nom->clear();
+        ui->lineEdit_prix->clear();
+         ui->lineEdit_LATITUDE->clear();
+          ui->lineEdit_LONGITUDE->clear();
+           ui->lineEdit_id->clear();
+            ui->lineEdit_quantiter->clear();
     ui->tableView->setModel(ftmp.afficher());
 }
 void MainWindow::on_radioButton_nom_clicked() {
@@ -274,6 +281,16 @@ void MainWindow::on_radioButton_etoile_clicked() {
             ui->tableView->setModel(ftmp.affichere());
 
 }
+void MainWindow::on_radioButton_deetoile_clicked() {
+
+            ui->tableView->setModel(ftmp.afficherdn());
+
+    }
+void MainWindow::on_radioButton_denom_clicked() {
+
+            ui->tableView->setModel(ftmp.afficherde());
+
+    }
 
  //add this include
 
