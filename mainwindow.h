@@ -8,7 +8,11 @@
 #include <QZXing.h>
 #include <QPixmap>
 #include <QLabel>
-#include <QModelIndex>  // Nécessaire pour utiliser QModelIndex
+#include <QModelIndex>
+#include <QFile>
+#include <QTextStream>
+#include <QDateTime>
+#include <QSerialPort>
 
 namespace Ui {
 class MainWindow;
@@ -23,31 +27,45 @@ public:
     ~MainWindow();
 
 private slots:
+
+
+
     // Génération du QR Code pour une commande
     void generateQRCode(int idc, int quant, QDate dates, float prix_pr, int idf);
 
     // Gestion des boutons
-    void on_ajouter_clicked(); // Ajouter une commande
-    void on_afficher_clicked(); // Afficher les commandes
+    void on_ajouter_clicked();
+    void on_afficher_clicked();
     void on_statButton_clicked();
-    void on_supprimer_clicked(); // Supprimer une commande
-    void on_update_clicked(); // Mettre à jour une commande
-    void on_tableView_clicked(const QModelIndex &index); // Sélectionner une commande dans la table
-    void on_pdf_clicked(); // Exporter les commandes en PDF
-    void on_recherche_textChanged(const QString &text); // Rechercher des commandes
-    void on_filtrer_clicked(); // Filtrer les commandes
-    void on_logout_clicked(); // Déconnexion
+    void on_supprimer_clicked();
+    void on_update_clicked();
+    void on_tableView_clicked(const QModelIndex &index);
+    void on_pdf_clicked();
+    void on_recherche_textChanged(const QString &text);
+    void on_filtrer_clicked();
+    void on_logout_clicked();
     bool isDatabaseEmpty();
 
     bool doesIdcExist(int idc);
-    // Validation des données
-    bool validateInput(); // Validation des champs avant ajout ou modification
-    bool validateEmail(const QString& email); // Validation d'un email (optionnel si requis)
+
+    bool validateInput();
     void showStatistics();
+
+    // Gestion de l'historique
+    void ajouterHistorique(const QString& action, const QString& description);
+     void chargerHistorique();
+    void on_supprimerHistorique_clicked();
+     void on_resetHistoriqueButton_clicked();
+    void on_btnAjouter_clicked();
+     void on_btnAfficherRetours_clicked();
+    void  initialiserPortSerie();
+     void gererDonneesArduino();
 private:
-    Ui::MainWindow *ui; // Interface utilisateur associée
-    Commandes c; // Objet Commandes pour les opérations CRUD
-    int idc; // Variable pour stocker l'ID de commande sélectionné
+    Ui::MainWindow *ui;
+    Commandes c;
+    int idc;
+    QSerialPort* serialPort;
+    bool historiqueEfface;
 };
 
 #endif // MAINWINDOW_H

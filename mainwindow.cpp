@@ -22,19 +22,21 @@
 #include <QtCharts/QBarSet>
 #include <QtCharts/QBarCategoryAxis>
 #include <QtCharts/QValueAxis>
+#include <QSoundEffect>
 
-
-
- // Pour QPageSize::A4
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    c() // Initialisation de l'objet Commandes
+    c(),
+    historiqueEfface(false)
 {
     ui->setupUi(this);
     connect(ui->tableView, &QTableView::clicked, this, &MainWindow::on_tableView_clicked);
+    connect(ui->supprimerHistoriqueButton, &QPushButton::clicked, this, &MainWindow::on_supprimerHistorique_clicked);
 
+
+    chargerHistorique();
 }
 
 MainWindow::~MainWindow()
@@ -63,12 +65,7 @@ bool MainWindow::doesIdcExist(int idc) {
 
 
 
-bool MainWindow::validateEmail(const QString& email)
-{
-    QRegularExpression emailRegex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
-    QRegularExpressionMatch match = emailRegex.match(email);
-    return match.hasMatch();
-}
+
 
 bool MainWindow::validateInput()
 {
@@ -98,11 +95,21 @@ bool MainWindow::validateInput()
         return false;
     }
 
+    if (quant <= 0) {
+        QMessageBox::warning(nullptr, "Erreur", "La quantité doit être positive.");
+        return false;
+    }
+    if (prix_pr <= 0) {
+        QMessageBox::warning(nullptr, "Erreur", "Le prix doit être positif.");
+        return false;
+    }
+
+
     return true;
 }
 void MainWindow::generateQRCode(int idc, int quant, QDate dates, float prix_pr, int idf)
 {
-    // Créer une chaîne contenant toutes les informations de la commande
+
     QString commandeData = QString("IDC: %1\nQuantité: %2\nDate: %3\nPrix: %4\nIDF: %5")
                                .arg(idc)
                                .arg(quant)
@@ -124,6 +131,12 @@ void MainWindow::generateQRCode(int idc, int quant, QDate dates, float prix_pr, 
 
 void MainWindow::on_afficher_clicked()
 {
+    QSoundEffect* soundEffect = new QSoundEffect(this);
+    soundEffect->setSource(QUrl("click.wav"));  // Chemin vers le fichier son dans les ressources
+    soundEffect->setVolume(0.5);  // Facultatif : ajuster le volume
+    soundEffect->play();  // Joue le son
+
+
     // Vérifiez si la base de données est vide
     if (isDatabaseEmpty()) {
         QMessageBox::warning(this, "Alerte", "La base de données est vide.");
@@ -167,6 +180,7 @@ void MainWindow::on_afficher_clicked()
         QMessageBox::critical(this, "Erreur", "Erreur lors de l'exécution de la requête.");
         qDebug() << "Erreur SQL: " << query.lastError().text();
     }
+    ajouterHistorique("Affichage", "Toutes les commandes ont été affichées.");
 }
 
 void MainWindow::on_recherche_textChanged(const QString &text)
@@ -183,6 +197,7 @@ void MainWindow::on_recherche_textChanged(const QString &text)
 }
 
 void MainWindow::on_statButton_clicked() {
+
     // Exemple de fonction pour générer un graphique
     QBarSet *set = new QBarSet("Exemple");
     *set << 1 << 2 << 3 << 4 << 5;
@@ -199,6 +214,7 @@ void MainWindow::on_statButton_clicked() {
     chartView->setRenderHint(QPainter::Antialiasing);
     chartView->resize(800, 600);
     chartView->show();
+    ajouterHistorique("Statistiques", "Les statistiques ont été affichées.");
 }
 
 
@@ -243,6 +259,9 @@ void MainWindow::on_ajouter_clicked()
     } else {
         QMessageBox::critical(this, "Erreur d'ajout", "Échec de l'ajout de la commande.");
     }
+    if (ajoutReussi) {
+        ajouterHistorique("Ajout", QString("Commande ajoutée avec IDC = %1").arg(idc));
+    }
 }
 
 
@@ -261,6 +280,9 @@ void MainWindow::on_supprimer_clicked()
         ui->tableView->setModel(commande.afficher());
     } else {
         QMessageBox::critical(this, "Erreur de suppression", "Échec de la suppression de la commande.");
+    }
+    if (suppressionReussie) {
+        ajouterHistorique("Suppression", QString("Commande supprimée avec IDC = %1").arg(idc));
     }
 }
 
@@ -314,7 +336,9 @@ void MainWindow::on_update_clicked()
         ui->idf->clear();
     } else {
         QMessageBox::critical(this, "Erreur de modification", "Échec de la modification de la commande.");
-    }
+    }        if (modificationReussie) {
+        ajouterHistorique("Modification", QString("Commande modifiée avec IDC = %1").arg(idc));}
+
 }
 
 
@@ -424,6 +448,7 @@ void MainWindow::on_pdf_clicked()
 
     // Confirmation
     QMessageBox::information(this, "Exportation PDF", "Le tableau complet a été exporté avec succès en format PDF !");
+    ajouterHistorique("PDF", "Un PDF des commandes a été généré.");
 }
 
 
@@ -455,6 +480,7 @@ void MainWindow::on_filtrer_clicked() {
         QMessageBox::critical(this, "Erreur SQL", "Impossible d'exécuter la requête de tri : " + query.lastError().text());
         qDebug() << "Erreur SQL :" << query.lastError().text();
     }
+    ajouterHistorique("Affichage", "Toutes les commandes ont été trier.");
 }
 void MainWindow::showStatistics()
 {
@@ -472,7 +498,7 @@ void MainWindow::showStatistics()
 
     while (query.next()) {
         QString type = query.value(0).toString();    // TYPE
-        int count = query.value(1).toInt();         // COUNT(*)
+        int count = query.value(1).toInt();          // COUNT(*)
 
         QBarSet *set = new QBarSet(type);
         *set << count;
@@ -487,28 +513,27 @@ void MainWindow::showStatistics()
     chart->setTitle("Statistiques des commandes par type");
     chart->setAnimationOptions(QChart::SeriesAnimations);
 
-    // Ajouter des axes
+    // Ajouter un axe des catégories (axe X)
     QBarCategoryAxis *axisX = new QBarCategoryAxis();
-    axisX->append(categories);
+    axisX->append(categories); // Ajouter les catégories à l'axe X
     chart->addAxis(axisX, Qt::AlignBottom);
     series->attachAxis(axisX);
 
+    // Ajouter un axe des valeurs (axe Y)
     QValueAxis *axisY = new QValueAxis();
-    axisY->setRange(0, 10); // Ajustez la plage en fonction de vos données
+    axisY->setRange(0, 100); // Définir une plage appropriée pour l'axe Y
     chart->addAxis(axisY, Qt::AlignLeft);
     series->attachAxis(axisY);
 
-    // Ajouter le graphique à une vue
+    // Créer un QChartView pour afficher le graphique
     QChartView *chartView = new QChartView(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->resize(800, 600); // Ajuster la taille du graphique
+    chartView->show(); // Afficher le graphique
 
-    // Créer une nouvelle fenêtre pour afficher les statistiques
-    QMainWindow *statsWindow = new QMainWindow(this);
-    statsWindow->setCentralWidget(chartView);
-    statsWindow->resize(800, 600);
-    statsWindow->setWindowTitle("Statistiques");
-    statsWindow->show();
+    ajouterHistorique("Statistiques", "Les statistiques ont été affichées.");
 }
+
 
 
 
@@ -527,5 +552,210 @@ void MainWindow::on_logout_clicked()
     } else {
         // L'utilisateur a choisi "Non", donc on fait rien
         return;
+    }
+}
+
+
+void MainWindow::ajouterHistorique(const QString &action, const QString &description)
+{
+    // 1. Obtenir la date et l'heure actuelles
+    QString dateTime = QDateTime::currentDateTime().toString("dd/MM/yyyy hh:mm:ss");
+
+    // 2. Formater la ligne d'historique
+    QString historiqueEntry = dateTime + " - " + action + ": " + description + "\n";
+
+    // 3. Écrire dans un fichier texte
+    QFile file("historique.txt");
+    if (file.open(QIODevice::Append | QIODevice::Text))
+    {
+        QTextStream out(&file);
+        out << historiqueEntry;
+        file.close();
+    }
+
+    // 4. Mettre à jour le QLabel de l'interface (supposons que c'est `ui->labelHistorique`)
+    QString existingText = ui->labelHistorique->text();
+    ui->labelHistorique->setText(existingText + historiqueEntry);
+}
+
+
+
+
+
+void MainWindow::chargerHistorique()
+{
+    if (!historiqueEfface) {
+        // Charger l'historique depuis le fichier texte
+        QFile file("historique.txt");
+
+        // Vérifier si le fichier est ouvert
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&file);
+            QString historiqueTexte;
+
+            // Lire tout le contenu du fichier et l'ajouter à historiqueTexte
+            while (!in.atEnd()) {
+                QString line = in.readLine();
+                historiqueTexte.append(line + "\n"); // Ajoute chaque ligne au texte
+            }
+
+            // Mettre à jour le texte du label avec l'historique chargé
+            ui->labelHistorique->setText(historiqueTexte);
+            file.close(); // Fermer le fichier après lecture
+        } else {
+            QMessageBox::warning(this, "Erreur", "Impossible d'ouvrir le fichier d'historique.");
+        }
+    } else {
+        // Si l'historique a été effacé, vider le texte du label
+        ui->labelHistorique->clear();
+    }
+}
+
+
+void MainWindow::on_supprimerHistorique_clicked()
+{
+    // Afficher une boîte de confirmation avant de supprimer
+    QMessageBox::StandardButton reply = QMessageBox::question(this, "Supprimer l'historique",
+                                                              "Êtes-vous sûr de vouloir supprimer tout l'historique ?", QMessageBox::Yes | QMessageBox::No);
+
+    // Si l'utilisateur confirme
+    if (reply == QMessageBox::Yes) {
+        // Vider le fichier historique.txt
+        QFile file("historique.txt");
+        if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate)) {
+            file.close(); // Ferme le fichier, ce qui efface son contenu
+        }
+
+        // Marquer que l'historique a été effacé
+        historiqueEfface = true;
+
+        // Vider le texte du label
+        ui->labelHistorique->clear();
+    }
+}
+
+void MainWindow::on_resetHistoriqueButton_clicked()
+{
+    // Réinitialiser l'état de l'historique
+    historiqueEfface = false;
+
+    // Recharger l'historique depuis le fichier texte dans le label
+    chargerHistorique();
+}
+
+void MainWindow::on_btnAjouter_clicked()
+{
+    // Récupération des valeurs entrées par l'utilisateur
+    int idCommande = ui->lineEditId->text().toInt();
+    int quantiteDemandee = ui->lineEditQuantite->text().toInt();
+
+    // Vérification de la connexion à la base de données
+    if (!QSqlDatabase::database().isOpen()) {
+        QMessageBox::critical(this, "Erreur de connexion", "La connexion à la base de données est fermée.");
+        return;
+    }
+
+    // Connexion à la base de données et préparation de la requête
+    QSqlQuery query;
+    query.prepare("SELECT QUANT, PRIX_PR FROM COMMANDES WHERE IDC = :IDC");
+    query.bindValue(":IDC", idCommande);
+
+    if (query.exec()) {
+        if (query.next()) {
+            int quantiteDisponible = query.value(0).toInt();
+            float prix = query.value(1).toFloat();
+
+            // Vérification de la quantité
+            if (quantiteDisponible >= quantiteDemandee) {
+                // Alerte pour afficher que la quantité est disponible avec le prix
+                QString message = QString("La quantité demandée est disponible.\nPrix pour cette quantité: %1").arg(prix * quantiteDemandee);
+                QMessageBox::information(this, "Quantité Disponible", message);
+            } else {
+                // Alerte si la quantité demandée est supérieure à celle en stock
+                QString message = QString("La quantité demandée est supérieure à la quantité disponible (%1 en stock).").arg(quantiteDisponible);
+                QMessageBox::warning(this, "Stock Insuffisant", message);
+            }
+        } else {
+            QMessageBox::information(this, "Aucune donnée", "Aucune commande trouvée pour cet ID.");
+        }
+    } else {
+        // Afficher l'erreur SQL
+        QMessageBox::critical(this, "Erreur", query.lastError().text());
+    }
+}
+
+void MainWindow::on_btnAfficherRetours_clicked()
+{
+    // Vérifier si la connexion à la base de données est ouverte
+    if (!QSqlDatabase::database().isOpen()) {
+        QMessageBox::critical(this, "Erreur de connexion", "La connexion à la base de données est fermée.");
+        return;
+    }
+
+    // Calculer la date limite : il y a un an
+    QDate dateLimite = QDate::currentDate().addYears(-1);
+
+    // Requête SQL pour récupérer les commandes dont la date est supérieure à un an
+    QSqlQuery query;
+    query.prepare("SELECT IDC, DATES, QUANT FROM COMMANDES WHERE DATES < :dateLimite");
+    query.bindValue(":dateLimite", dateLimite);
+
+    if (!query.exec()) {
+        // Afficher l'erreur SQL
+        QMessageBox::critical(this, "Erreur", query.lastError().text());
+        return;
+    }
+
+    // Préparer l'affichage des résultats
+    QString resultat = "Commandes de retour (plus d'un an) :\n";
+    while (query.next()) {
+        int idCommande = query.value(0).toInt();
+        QString dateCommande = query.value(1).toDate().toString("dd/MM/yyyy");
+        int quantite = query.value(2).toInt();
+
+        // Ajouter chaque ligne au résultat
+        resultat += QString("ID: %1 | Date: %2 | Quantité: %3\n")
+                        .arg(idCommande)
+                        .arg(dateCommande)
+                        .arg(quantite);
+    }
+
+    // Vérifier si aucune commande n'a été trouvée
+    if (resultat == "Commandes de retour (plus d'un an) :\n") {
+        resultat = "Aucune commande n'est plus vieille d'un an.";
+    }
+
+    // Afficher les résultats dans le QLabel
+    ui->labelRetours->setText(resultat);
+}
+
+void MainWindow::initialiserPortSerie() {
+    serialPort = new QSerialPort(this);
+    serialPort->setPortName("COM3"); // Remplacez par votre port
+    serialPort->setBaudRate(QSerialPort::Baud9600);
+    serialPort->setDataBits(QSerialPort::Data8);
+    serialPort->setParity(QSerialPort::NoParity);
+    serialPort->setStopBits(QSerialPort::OneStop);
+    serialPort->setFlowControl(QSerialPort::NoFlowControl);
+
+    if (serialPort->open(QIODevice::ReadWrite)) {
+        connect(serialPort, &QSerialPort::readyRead, this, &MainWindow::gererDonneesArduino);
+        qDebug() << "Port série connecté.";
+    } else {
+        qDebug() << "Erreur lors de l'ouverture du port série: " << serialPort->errorString();
+    }
+}
+
+void MainWindow::gererDonneesArduino() {
+    QByteArray data = serialPort->readAll();
+    QString code = QString::fromUtf8(data).trimmed();
+
+    Commandes commandes;
+    if (commandes.verifierCode(code)) {
+        serialPort->write("1"); // Code valide : Ouvrir le servo
+        qDebug() << "Code valide, servo activé.";
+    } else {
+        serialPort->write("0"); // Code invalide : Refuser
+        qDebug() << "Code invalide.";
     }
 }

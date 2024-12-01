@@ -99,3 +99,17 @@ QStandardItemModel* Commandes::rechercherParIdc(const QString& text) {
         return nullptr;
     }
 }
+
+bool Commandes::verifierCode(const QString& code) {
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM COMMANDES WHERE IDC = :code");
+    query.bindValue(":code", code);
+
+    if (query.exec() && query.next()) {
+        return query.value(0).toInt() > 0; // Retourne true si le code existe
+    } else {
+        qDebug() << "Erreur de vérification du code: " << query.lastError().text();
+        return false;
+    }
+}
+
