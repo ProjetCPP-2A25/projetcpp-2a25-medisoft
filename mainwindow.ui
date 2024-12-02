@@ -601,6 +601,32 @@ background-color: rgb(207, 207, 207);</string>
        <string>TRIER par etoile desc</string>
       </property>
      </widget>
+     <widget class="QLabel" name="inputLabel">
+      <property name="geometry">
+       <rect>
+        <x>480</x>
+        <y>100</y>
+        <width>49</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>450</x>
+        <y>100</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>le id:</string>
+      </property>
+     </widget>
      <zorder>label_5</zorder>
      <zorder>groupBox</zorder>
      <zorder>label_9</zorder>
@@ -617,6 +643,8 @@ background-color: rgb(207, 207, 207);</string>
      <zorder>on_pushButton_showStats1</zorder>
      <zorder>radioButton_nom_2</zorder>
      <zorder>radioButton_nom_3</zorder>
+     <zorder>inputLabel</zorder>
+     <zorder>label_15</zorder>
     </widget>
    </widget>
   </widget>

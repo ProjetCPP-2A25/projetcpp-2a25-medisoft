@@ -6,6 +6,8 @@
 #include <QMessageBox>
 #include <QDebug>
 //#include <QWebEngineView>
+#include <QtSerialPort/QSerialPort>
+#include <QtSerialPort/QSerialPortInfo>
 #include <QDesktopServices>
 #include <QtCharts>
 #include <QChartView>
@@ -55,14 +57,35 @@ void on_radioButton_nom_clicked();
 QString generateHtmlFromData(QAbstractItemModel* model);
 void showMap();
 void on_pushButton_showStats2_clicked();
+void readSerial();
+
 
 
 private:
     Ui::MainWindow *ui;
     Fournisseur ftmp; // Instance temporaire pour les opérations CRUD
     QSqlQueryModel* model; // Declare a persistent model
-
+    QSerialPort *arduino;
+    static const quint16 arduino_uno_vendor_id = 9025;
+    static const quint16 arduino_uno_product_id = 67;
+    QString arduino_port_name;
+    bool arduino_is_available;
+    void arduino_init();
+    int attemptCount = 0;
+    int maxAttempts = 3;
+    // Buffer for incoming serial data
+       QByteArray serialBuffer;
 };
+
+
+
+
+
+
+
+
+////////////////////////////////////*mapwidget*//////////////////
+
 
 class SimpleMapWidget : public QWidget
 {
@@ -166,6 +189,7 @@ private:
         double lon;
     };
     QVector<Location> locations;
+
 };
 
 #endif // MAINWINDOW_H

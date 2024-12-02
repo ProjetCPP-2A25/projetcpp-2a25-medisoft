@@ -73,6 +73,7 @@ MainWindow::MainWindow(QWidget *parent) :
   model(new QSqlQueryModel(this))
 {
     ui->setupUi(this);
+    arduino_init();
     model = ftmp.afficher(); // Populate model with initial data
         ui->tableView->setModel(model);
     QSqlQueryModel *model = ftmp.afficher();
@@ -99,7 +100,7 @@ MainWindow::MainWindow(QWidget *parent) :
               connect(ui->pushButton_showMap, &QPushButton::clicked, this, &MainWindow::showMap);
 
               connect(ui->on_pushButton_showStats1, &QPushButton::clicked, this, &MainWindow::on_pushButton_showStats2_clicked);
-
+   connect(arduino, &QSerialPort::readyRead, this, &MainWindow::readSerial);
 
 
     // Afficher la liste des fournisseurs au démarrage
@@ -141,6 +142,8 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index)
 
 MainWindow::~MainWindow()
 {
+    if(arduino->isOpen())
+           arduino->close();
     delete ui;
 }
 void MainWindow::on_pushButton_showStats_clicked()
@@ -385,5 +388,140 @@ void MainWindow::on_pushButton_showStats2_clicked()
     }
     catch (...) {
         QMessageBox::critical(this, "Error", "An unknown error occurred");
+    }
+}
+
+void MainWindow::arduino_init()
+{
+    arduino_is_available = false;
+    arduino_port_name = "";
+    arduino = new QSerialPort(this);  // Set parent to manage memory
+
+    foreach(const QSerialPortInfo &serialPortInfo, QSerialPortInfo::availablePorts())
+    {
+        if(serialPortInfo.hasVendorIdentifier() && serialPortInfo.hasProductIdentifier())
+        {
+            if(serialPortInfo.vendorIdentifier() == arduino_uno_vendor_id &&
+               serialPortInfo.productIdentifier() == arduino_uno_product_id)
+            {
+                arduino_port_name = serialPortInfo.portName();
+                arduino_is_available = true;
+                break; // Stop searching once Arduino is found
+            }
+        }
+    }
+
+    if(arduino_is_available)
+    {
+        arduino->setPortName(arduino_port_name);
+        if(arduino->open(QSerialPort::ReadOnly))
+        {
+            arduino->setBaudRate(QSerialPort::Baud9600);
+            arduino->setDataBits(QSerialPort::Data8);
+            arduino->setParity(QSerialPort::NoParity);
+            arduino->setStopBits(QSerialPort::OneStop);
+            arduino->setFlowControl(QSerialPort::NoFlowControl);
+
+            connect(arduino, &QSerialPort::readyRead, this, &MainWindow::readSerial);
+        }
+        else
+        {
+            QMessageBox::warning(this, "Arduino Connection", "Failed to open the Arduino port!");
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Arduino Connection", "Arduino not found!");
+    }
+}
+
+void MainWindow::readSerial()
+{
+    if(!arduino->isReadable())
+        return;
+
+    serialBuffer.append(arduino->readAll());
+
+    // Process each complete line
+    while(serialBuffer.contains('\n'))
+    {
+        int newlineIndex = serialBuffer.indexOf('\n');
+        QByteArray line = serialBuffer.left(newlineIndex);
+        serialBuffer.remove(0, newlineIndex + 1);
+
+        QString strLine = QString::fromUtf8(line).trimmed();
+        qDebug() << "Received Line:" << strLine;  // Debugging
+
+        if(strLine.startsWith("KEY:"))
+        {
+            QString key = strLine.mid(4); // Extract the key after "KEY:"
+            QString currentText = ui->inputLabel->text();
+            ui->inputLabel->setText(currentText + key);
+        }
+        else if(strLine == "CLEAR")
+        {
+            ui->inputLabel->clear();
+        }
+        else if(strLine.startsWith("ID:"))
+        {
+            QString id = strLine.mid(3); // Extract the ID after "ID:"
+            ui->inputLabel->clear(); // Clear the input label after processing
+
+            // Reset attempt count on successful input
+            // Optionally, you can reset attemptCount here if needed
+
+            // Query the database for delivery info
+            QSqlQuery query;
+            query.prepare("SELECT NOM, PRENOM, PRIXLEVRISON, QUANTITER FROM FOURNISSEUR WHERE IDF = :id");
+            query.bindValue(":id", id.toInt());
+
+            if(query.exec())
+            {
+                if(query.next())
+                {
+                    QString name = query.value("NOM").toString();
+                    QString prenom = query.value("PRENOM").toString();
+                    float price = query.value("PRIXLEVRISON").toFloat();
+                    int quantity = query.value("QUANTITER").toInt();
+
+                    QString status = (quantity > 0) ? "Available" : "Out of stock";
+
+                    QString message = QString("Delivery Information:\n"
+                                           "ID: %1\n"
+                                           "Supplier: %2 %3\n"
+                                           "Price: %.2f\n"
+                                           "Quantity: %4\n"
+                                           "Status: %5")
+                                .arg(id)
+                                .arg(name)
+                                .arg(prenom)
+                                .arg(price)
+                                .arg(quantity)
+                                .arg(status);
+
+                    QMessageBox::information(this, "Delivery Status", message);
+                }
+                else
+                {
+                    QMessageBox::warning(this, "Error",
+                        QString("No delivery found with ID: %1").arg(id));
+
+                    // Increment attempt count and handle max attempts
+                    attemptCount++;
+                    if(attemptCount >= maxAttempts)
+                    {
+                        QMessageBox::critical(this, "Max Attempts Reached",
+                            "You have reached the maximum number of attempts.");
+                        // Optionally disable input or take other actions
+                        arduino->close();
+                    }
+                }
+            }
+            else
+            {
+                QMessageBox::warning(this, "Database Error",
+                    "Failed to execute query: " );
+            }
+        }
     }
 }

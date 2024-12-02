@@ -6,6 +6,8 @@
 
 QT       += core gui sql
 QT += sql
+QT += serialport
+
 //QT += core gui webenginewidgets
 QT += printsupport
 //QT += core gui sql location
