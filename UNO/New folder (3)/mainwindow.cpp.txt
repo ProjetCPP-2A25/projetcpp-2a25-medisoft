@@ -484,14 +484,14 @@ void MainWindow::readSerial()
                     float price = query.value("PRIXLEVRISON").toFloat();
                     int quantity = query.value("QUANTITER").toInt();
 
-                    QString status = (quantity > 0) ? "Dispo" : "Out of stock";
+                    QString status = (quantity > 0) ? "Available" : "Out of stock";
 
-                    QString message = QString("ouvrir la porte pour:\n"
+                    QString message = QString("Delivery Information:\n"
                                            "ID: %1\n"
-                                           "fournisseur: %2 %3\n"
-                                           "prix: %.2f\n"
-                                           "quantité: %4\n"
-                                           "status: %5")
+                                           "Supplier: %2 %3\n"
+                                           "Price: %.2f\n"
+                                           "Quantity: %4\n"
+                                           "Status: %5")
                                 .arg(id)
                                 .arg(name)
                                 .arg(prenom)
@@ -499,7 +499,7 @@ void MainWindow::readSerial()
                                 .arg(quantity)
                                 .arg(status);
 
-                    QMessageBox::information(this, "ouverture du porte", message);
+                    QMessageBox::information(this, "Delivery Status", message);
                 }
                 else
                 {
