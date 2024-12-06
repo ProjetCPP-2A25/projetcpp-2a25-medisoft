@@ -1,0 +1,10 @@
+debug/afficherproduitswindow.o
+debug/listproduit.o
+debug/main.o
+debug/mainwindow.o
+debug/connection.o
+debug/produitai.o
+debug/produits.o
+debug/qrc_img.o
+debug/moc_afficherproduitswindow.o
+debug/moc_mainwindow.o

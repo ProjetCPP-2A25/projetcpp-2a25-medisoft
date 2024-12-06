@@ -1,0 +1,10 @@
+release/afficherproduitswindow.o
+release/listproduit.o
+release/main.o
+release/mainwindow.o
+release/connection.o
+release/produitai.o
+release/produits.o
+release/qrc_img.o
+release/moc_afficherproduitswindow.o
+release/moc_mainwindow.o
