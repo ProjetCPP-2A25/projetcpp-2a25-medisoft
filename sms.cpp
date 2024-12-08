@@ -6,8 +6,7 @@
 #include "sms.h"
 
 // Replace with your Twilio number
-const QString twilio_number = "+15673414438";
-
+//const QString twilio_number = "+15673414438";
 // Constructor
 sms::sms() {
 }
@@ -19,13 +18,14 @@ void sms::sendSMS(const QString &to, const QString &message) {
 
     // Twilio API URL
     QUrl url("https://api.twilio.com/2010-04-01/Accounts/AC6d6b8f241105b94094bc22f53bbc6ef6/Messages.json");
+    std::string twilioAccountSid = "VotreCléIci"; // Placeholder sécurisé
 
     // Set up the request
     QNetworkRequest request(url);
 
     // Set the Authorization header
-    QString accountSID = "AC6d6b8f241105b94094bc22f53bbc6ef6";
-    QString authToken = "30ea4343847a7d05307c8f1942aad0e7";
+    //QString accountSID = "AC6d6b8f241105b94094bc22f53bbc6ef6";
+    //QString authToken = "30ea4343847a7d05307c8f1942aad0e7";
     QString credentials = accountSID + ":" + authToken;
     QByteArray base64Credentials = credentials.toUtf8().toBase64();
     qDebug() << "Authorization Header:" << "Basic " + base64Credentials;
