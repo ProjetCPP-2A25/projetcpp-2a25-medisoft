@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/premierrpage">
+        <file>firstpageee.PNG</file>
+    </qresource>
+</RCC>

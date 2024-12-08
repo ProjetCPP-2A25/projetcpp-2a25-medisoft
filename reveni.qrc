@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/revenir">
+        <file>revenir.PNG</file>
+    </qresource>
+</RCC>

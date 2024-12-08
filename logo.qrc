@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/medi">
+        <file>medisoftt.png</file>
+    </qresource>
+</RCC>

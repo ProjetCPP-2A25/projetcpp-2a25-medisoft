@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/mdp">
+        <file>mot de passe.png</file>
+    </qresource>
+</RCC>

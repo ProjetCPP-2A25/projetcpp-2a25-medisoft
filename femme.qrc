@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/femme">
+        <file>docteur.png</file>
+    </qresource>
+</RCC>

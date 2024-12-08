@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/entrer">
+        <file>entrer.png</file>
+    </qresource>
+</RCC>

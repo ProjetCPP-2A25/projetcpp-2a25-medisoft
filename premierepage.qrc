@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/firstpage">
+        <file>1ere page qt.PNG</file>
+    </qresource>
+</RCC>
