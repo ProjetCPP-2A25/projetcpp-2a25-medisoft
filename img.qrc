@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>pharmacie.png</file>
+    </qresource>
+    <qresource prefix="/sounds">
+        <file>click.wav</file>
+    </qresource>
+</RCC>
