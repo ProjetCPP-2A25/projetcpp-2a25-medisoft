@@ -156,7 +156,7 @@ std::unique_ptr<QSqlQueryModel> Patient::rechercher(int id) {
     model->setQuery(query);
     return model; // Return the model
 }
-*/
+*//*
 std::unique_ptr<QSqlQueryModel> Patient::rechercher(int IDP) {
     QSqlQuery query;
 
@@ -187,8 +187,41 @@ std::unique_ptr<QSqlQueryModel> Patient::rechercher(int IDP) {
     qDebug() << "Patient found with IDP:" << IDP;
 
     return model;  // Return the populated model
-}
+}*/
+std::unique_ptr<QSqlQueryModel> Patient::rechercher(int IDP) {
+    QSqlQuery query;
 
+    // Prepare the SQL query to select a patient by IDP
+    query.prepare("SELECT * FROM patient WHERE IDP = :IDP");
+    query.bindValue(":IDP", IDP);
+
+    // Debugging: Log the IDP being searched for
+    qDebug() << "Executing query for patient with IDP:" << IDP;
+
+    // Execute the query and handle failure
+    if (!query.exec()) {
+        qDebug() << "Query execution failed for IDP:" << IDP << "Error:" << query.lastError().text();
+        return nullptr;  // Return nullptr if the query fails
+    }
+
+    // Debugging: Check if any rows were returned by the query
+    if (query.size() == 0) {
+        qDebug() << "No rows returned for IDP:" << IDP;
+        return nullptr;  // No results found
+    }
+
+    // If rows are returned, log and return the model
+    qDebug() << query.size() << "rows found for IDP:" << IDP;
+
+    // Create the QSqlQueryModel and set the query result
+    auto model = std::make_unique<QSqlQueryModel>();
+    model->setQuery(query);
+
+    // Debugging: Confirm that a patient was found
+    qDebug() << "Patient found with IDP:" << IDP;
+
+    return model;  // Return the populated model
+}
 /*QMap<QString, double> Patient::calculerStatistiquesMoyenT()
 {
     QMap<QString, double> statistiques;

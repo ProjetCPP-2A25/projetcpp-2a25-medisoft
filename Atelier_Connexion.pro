@@ -9,6 +9,7 @@ QT       += core gui sql  printsupport charts network \
 
 CONFIG += c++11
 
+include(C:/Users/micro/OneDrive - ESPRIT/Bureau/projetcpp-2a25-medisoft-GestionCommandes/QZXing/src/QZXing.pri)
 
 #QT += charts
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -30,21 +31,33 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     MAILER.cpp \
     SMS.cpp \
+    commandes.cpp \
     employes.cpp \
+    fournisseur.cpp \
         main.cpp \
         mainwindow.cpp \
     connection.cpp \
     email.cpp \
-    patient.cpp
+    patient.cpp \
+    produitai.cpp \
+    produits.cpp \
+    serialcommunication.cpp \
+    ventilateur.cpp
 
 HEADERS += \
     MAILER.h \
     SMS.h \
+    commandes.h \
     employes.h \
+    fournisseur.h \
         mainwindow.h \
     connection.h \
     email.h \
-    patient.h
+    patient.h \
+    produitai.h \
+    produits.h \
+    serialcommunication.h \
+    ventilateur.h
 
 FORMS += \
         mainwindow.ui
@@ -55,6 +68,8 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    aidoc.qrc \
+    ajouter.qrc \
     back.qrc \
     entrer.qrc \
     femme.qrc \
@@ -62,6 +77,7 @@ RESOURCES += \
     logg.qrc \
     logo.qrc \
     maiil.qrc \
+    map.qrc \
     mdp.qrc \
     notiff.qrc \
     pdf.qrc \
@@ -71,3 +87,6 @@ RESOURCES += \
     reveni.qrc \
     stat.qrc \
     welcome.qrc
+
+DISTFILES += \
+    qml.qml
