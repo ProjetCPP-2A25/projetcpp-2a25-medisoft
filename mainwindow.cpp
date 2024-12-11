@@ -1,3 +1,4 @@
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include <QMessageBox>
@@ -616,8 +617,106 @@ void MainWindow::on_btn_sendEmail_clicked() {
         QMessageBox::critical(this, "Failure", "Failed to send email. Check your configuration.");
     }
 }
+#include <QTimer>
 
 void MainWindow::on_btn_statistiques_clicked()
+{
+    // Créer un nouveau QWidget pour afficher le graphique
+    QWidget* widgetStatistiques = new QWidget(this);  // Créer le widget parent de type QWidget
+
+    // Créer une requête SQL pour récupérer les genres des patients
+    QSqlQuery query;
+    query.prepare("SELECT Genre FROM PATIENT");
+
+    // Exécuter la requête
+    if (query.exec()) {
+        // Variables pour compter les genres
+        int maleCount = 0;
+        int femaleCount = 0;
+        int otherCount = 0;
+
+        // Compter les genres dans les résultats
+        while (query.next()) {
+            QString GENRE = query.value(0).toString().trimmed();  // Récupérer le genre du patient et enlever les espaces
+            GENRE = GENRE.toLower();  // Convertir en minuscules pour éviter les problèmes de casse
+
+            // Comparaison avec des valeurs nettoyées
+            if (GENRE == "homme") {
+                maleCount++;
+            } else if (GENRE == "femme") {
+                femaleCount++;
+            } else {
+                otherCount++;
+            }
+        }
+
+        // Total des patients pour les pourcentages
+        int total = maleCount + femaleCount + otherCount;
+
+        // Calcul des pourcentages
+        float malePercentage = (total != 0) ? (maleCount * 100.0f) / total : 0.0f;
+        float femalePercentage = (total != 0) ? (femaleCount * 100.0f) / total : 0.0f;
+        float otherPercentage = (total != 0) ? (otherCount * 100.0f) / total : 0.0f;
+
+        // Ajuster les pourcentages pour que la somme soit 100%
+        float totalPercentage = malePercentage + femalePercentage + otherPercentage;
+        if (totalPercentage != 100.0f && total != 0) {
+            float correction = 100.0f - totalPercentage;
+            malePercentage += correction;  // Appliquer la correction sur le plus grand secteur
+        }
+
+        // Création du graphique circulaire
+        QPieSeries *series = new QPieSeries();
+        series->setHoleSize(0.35);
+
+        // Ajouter les tranches (sections) pour chaque genre
+        QPieSlice *maleSlice = series->append(QString("Hommes %1%").arg(QString::number(malePercentage, 'f', 2)), malePercentage);
+        maleSlice->setLabelVisible();
+        maleSlice->setLabelColor(QColor(Qt::white));
+        maleSlice->setBrush(QColor(169, 169, 169));  // Gris clair
+
+        QPieSlice *femaleSlice = series->append(QString("Femmes %1%").arg(QString::number(femalePercentage, 'f', 2)), femalePercentage);
+        femaleSlice->setLabelVisible();
+        femaleSlice->setLabelColor(QColor(Qt::white));
+        femaleSlice->setBrush(QColor(144, 238, 144));  // Vert clair
+
+        QPieSlice *otherSlice = series->append(QString("Autres %1%").arg(QString::number(otherPercentage, 'f', 2)), otherPercentage);
+        otherSlice->setLabelVisible();
+        otherSlice->setLabelColor(QColor(Qt::white));
+        otherSlice->setBrush(QColor(119, 82, 254));  // Vous pouvez aussi ajuster cette couleur
+
+        // Créer un graphique avec la série
+        QChart *chart = new QChart();
+        chart->addSeries(series);
+        chart->setAnimationOptions(QChart::SeriesAnimations);
+
+        // Définir la couleur de fond du graphique en blanc
+        QBrush backgroundBrush(QColor(222, 222, 222));  // Fond blanc
+        chart->setBackgroundBrush(backgroundBrush);
+
+        // Créer un QChartView pour afficher le graphique
+        QChartView *chartView = new QChartView(chart);
+        chartView->setRenderHint(QPainter::Antialiasing);
+        chartView->setFixedSize(400, 400);  // Définir la taille du graphique
+        chartView->setParent(widgetStatistiques);  // Le graphique sera un enfant de widgetStatistiques
+
+        // Appliquer un style pour le widget
+        widgetStatistiques->setStyleSheet("background:#d3d3d3; color:white;");
+        widgetStatistiques->setGeometry(250, 150, 400, 400);  // Position et taille du widget dans la fenêtre principale
+        widgetStatistiques->show();
+
+        // Fermer automatiquement le graphique après 5 secondes
+        QTimer::singleShot(6000, widgetStatistiques, &QWidget::close);
+    } else {
+        // En cas d'erreur lors de l'exécution de la requête
+        QMessageBox::critical(this, "Erreur", "Erreur lors de la récupération des statistiques.");
+    }
+}
+
+
+
+
+/*void MainWindow::on_btn_statistiques_clicked()
 {
     // Créer une requête SQL pour récupérer tous les patients
     QSqlQuery query;
@@ -659,7 +758,7 @@ void MainWindow::on_btn_statistiques_clicked()
         // En cas d'erreur lors de l'exécution de la requête
         QMessageBox::critical(this, "Erreur", "Erreur lors de la récupération des statistiques.");
     }
-}
+}*/
 
 #include <QTimer>
 #include <QDateTime>

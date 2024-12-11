@@ -2,7 +2,7 @@
 #include "connection.h"
 #include <QMessageBox>
 #include <QObject>
-#include "ui_mainwindow.h"
+//#include "ui_parient.h"
 #include "mainwindow.h"
 #include <QSqlQuery>
 #include <QSqlError>

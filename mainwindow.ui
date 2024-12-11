@@ -587,6 +587,19 @@ font: 700 italic 9pt &quot;Segoe UI&quot;;</string>
      <string/>
     </property>
    </widget>
+   <widget class="QWidget" name="widget_statistiques" native="true">
+    <property name="geometry">
+     <rect>
+      <x>510</x>
+      <y>250</y>
+      <width>351</width>
+      <height>281</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
+   </widget>
    <zorder>label_3</zorder>
    <zorder>label</zorder>
    <zorder>pb_notfier</zorder>
@@ -622,6 +635,7 @@ font: 700 italic 9pt &quot;Segoe UI&quot;;</string>
    <zorder>refreshButton</zorder>
    <zorder>btn_statistiques</zorder>
    <zorder>label_time</zorder>
+   <zorder>widget_statistiques</zorder>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

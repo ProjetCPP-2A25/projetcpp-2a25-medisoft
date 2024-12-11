@@ -64,6 +64,7 @@ public:
     QPushButton *pb_notfier;
     QPushButton *btn_sendEmail;
     QLabel *label_time;
+    QWidget *widget_statistiques;
     QMenuBar *menuBar;
     QToolBar *mainToolBar;
     QStatusBar *statusBar;
@@ -240,6 +241,10 @@ public:
         label_time->setGeometry(QRect(660, 70, 141, 61));
         label_time->setStyleSheet(QString::fromUtf8("background-color: rgb(207, 207, 207);\n"
 "font: 700 italic 9pt \"Segoe UI\";"));
+        widget_statistiques = new QWidget(centralWidget);
+        widget_statistiques->setObjectName("widget_statistiques");
+        widget_statistiques->setGeometry(QRect(510, 250, 351, 281));
+        widget_statistiques->setStyleSheet(QString::fromUtf8(""));
         MainWindow->setCentralWidget(centralWidget);
         label_3->raise();
         label->raise();
@@ -276,6 +281,7 @@ public:
         refreshButton->raise();
         btn_statistiques->raise();
         label_time->raise();
+        widget_statistiques->raise();
         menuBar = new QMenuBar(MainWindow);
         menuBar->setObjectName("menuBar");
         menuBar->setGeometry(QRect(0, 0, 918, 22));
