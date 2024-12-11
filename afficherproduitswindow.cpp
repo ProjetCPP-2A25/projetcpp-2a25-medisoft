@@ -1,6 +1,6 @@
 /*#include "AfficherProduitsWindow.h"
-#include <QVBoxLayout>
 #include <QHeaderView>
+#include <QVBoxLayout>
 
 AfficherProduitsWindow::AfficherProduitsWindow(LesProduits* produits, QWidget* parent)
     : QWidget(parent), lesProduits(produits) {

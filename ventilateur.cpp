@@ -1,4 +1,4 @@
-#include "ventilateur.h"
+/*#include "ventilateur.h"
 
 Ventilateur::Ventilateur() : ventilateurStatus(false) {}
 
@@ -19,5 +19,4 @@ void Ventilateur::checkVentilateurStatus()
     // Sinon, si le ventilateur est éteint :
     // ventilateurStatus = false;
     // emit ventilateurOff();
-}
-
+}*/

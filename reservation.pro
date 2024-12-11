@@ -8,7 +8,6 @@ QT       += core gui sql \
     quick
 QT       +=sql
 QT += charts
-QT += serialport
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets

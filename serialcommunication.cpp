@@ -1,8 +1,9 @@
-#include "SerialCommunication.h"
+/*#include "SerialCommunication.h"
 #include <QDebug>
 #include <QTimer>
 
-SerialCommunication::SerialCommunication(QObject *parent) : QObject(parent)
+SerialCommunication::SerialCommunication(QObject *parent)
+    : QObject(parent)
 {
     serial = new QSerialPort(this);
 
@@ -73,3 +74,4 @@ void SerialCommunication::onErrorOccurred(QSerialPort::SerialPortError error)
         qDebug() << "Erreur de communication série:" << serial->errorString();
     }
 }
+*/

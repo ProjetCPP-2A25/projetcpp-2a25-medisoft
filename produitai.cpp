@@ -2,50 +2,56 @@
 #include <QDebug>
 #include <QString>
 
-
 /*ProduitAI::ProduitAI(const QString& code, const QString& type)
     : code(code), type(type) {
     // Si le constructeur a d'autres initialisations, vérifiez aussi ici
 }*/
-ProduitAI::ProduitAI(const QString& code, const QString& type) {
+ProduitAI::ProduitAI(const QString &code, const QString &type)
+{
     this->code = code;
     this->tab = type.split(",");
-    this->nbr = 0;  // Initialiser à 0
+    this->nbr = 0; // Initialiser à 0
 }
 
-void ProduitAI::setCode(const QString& newCode) {
-    this->code = newCode;  // Assigner la nouvelle valeur au code
+void ProduitAI::setCode(const QString &newCode)
+{
+    this->code = newCode; // Assigner la nouvelle valeur au code
 }
 
-
-QStringList ProduitAI::getTab() const {
-    return tab;  // Retourne le tableau des types
+QStringList ProduitAI::getTab() const
+{
+    return tab; // Retourne le tableau des types
 }
 
-void ProduitAI::setOUI(ProduitAI* oui) {
-    OUI = oui;  // Assigne le fils droit
+void ProduitAI::setOUI(ProduitAI *oui)
+{
+    OUI = oui; // Assigne le fils droit
 }
 
-void ProduitAI::setNON(ProduitAI* non) {
-    NON = non;  // Assigne le fils gauche
+void ProduitAI::setNON(ProduitAI *non)
+{
+    NON = non; // Assigne le fils gauche
 }
 
-QString ProduitAI::getCode() const {
-    return code;  // Retourne le code du produit
+QString ProduitAI::getCode() const
+{
+    return code; // Retourne le code du produit
 }
 
-QString ProduitAI::getType() const {
-    return type;  // Retourne le type du produit
+QString ProduitAI::getType() const
+{
+    return type; // Retourne le type du produit
 }
 
-ProduitAI* ProduitAI::getOUI() const {
-    return OUI;  // Retourne le pointeur vers l'enfant droit (OUI)
+ProduitAI *ProduitAI::getOUI() const
+{
+    return OUI; // Retourne le pointeur vers l'enfant droit (OUI)
 }
 
-ProduitAI* ProduitAI::getNON() const {
-    return NON;  // Retourne le pointeur vers l'enfant gauche (NON)
+ProduitAI *ProduitAI::getNON() const
+{
+    return NON; // Retourne le pointeur vers l'enfant gauche (NON)
 }
-
 
 /*void ProduitAI::remplirTab() {
     // On commence par vider le tableau (au cas où il contient déjà des données)
@@ -80,38 +86,39 @@ void ProduitAI::supprimerArbre() {
     }
 }*/
 
-void ProduitAI::afficherArbre(int niveau) {
+void ProduitAI::afficherArbre(int niveau)
+{
     // Afficher le code et le type du produit actuel avec indentation pour visualiser la structure de l'arbre
-    QString indentation = QString("  ").repeated(niveau);  // Créer l'indentation selon le niveau
+    QString indentation = QString("  ").repeated(niveau); // Créer l'indentation selon le niveau
     qDebug() << indentation << "Produit : " << "Code:" << code << ", Type:" << type;
 
     // Afficher le sous-arbre gauche (NON)
     if (NON != nullptr) {
         qDebug() << indentation << "-> NON : ";
-        NON->afficherArbre(niveau + 1);  // Appel récursif avec un niveau supérieur
+        NON->afficherArbre(niveau + 1); // Appel récursif avec un niveau supérieur
     }
 
     // Afficher le sous-arbre droit (OUI)
     if (OUI != nullptr) {
         qDebug() << indentation << "-> OUI : ";
-        OUI->afficherArbre(niveau + 1);  // Appel récursif avec un niveau supérieur
+        OUI->afficherArbre(niveau + 1); // Appel récursif avec un niveau supérieur
     }
 }
 
-int ProduitAI::comparerTab(const ProduitAI* autreProduit) {
+int ProduitAI::comparerTab(const ProduitAI *autreProduit)
+{
     int count = 0;
     // Comparer les types des deux produits
-    for (const QString& t1 : this->tab) {
+    for (const QString &t1 : this->tab) {
         if (autreProduit->tab.contains(t1)) {
-            count++;  // Si un type est trouvé dans les deux, on incrémente
+            count++; // Si un type est trouvé dans les deux, on incrémente
         }
     }
-    this->nbr = count;  // Mettre à jour le nombre de types répétés
+    this->nbr = count; // Mettre à jour le nombre de types répétés
     return count;
 }
 
-void ProduitAI::afficherProduit() const {
+void ProduitAI::afficherProduit() const
+{
     qDebug() << "Produit : Code: " << code << ", Types: " << tab.join(",");
 }
-
-

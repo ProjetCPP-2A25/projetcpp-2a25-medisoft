@@ -270,12 +270,20 @@ Makefile: ../../reservation.pro C:/Qt/6.8.0/mingw_64/mkspecs/win32-g++/qmake.con
 		C:/Qt/6.8.0/mingw_64/mkspecs/features/yacc.prf \
 		C:/Qt/6.8.0/mingw_64/mkspecs/features/lex.prf \
 		../../reservation.pro \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6Quick.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6Charts.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6OpenGLWidgets.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6OpenGL.prl \
 		C:/Qt/6.8.0/mingw_64/lib/Qt6Widgets.prl \
 		C:/Qt/6.8.0/mingw_64/lib/Qt6Gui.prl \
 		C:/Qt/6.8.0/mingw_64/lib/Qt6Sql.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6QmlMeta.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6QmlModels.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6QmlWorkerScript.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6Qml.prl \
+		C:/Qt/6.8.0/mingw_64/lib/Qt6Network.prl \
 		C:/Qt/6.8.0/mingw_64/lib/Qt6Core.prl \
-		C:/Qt/6.8.0/mingw_64/mkspecs/features/build_pass.prf \
-		../../img.qrc
+		C:/Qt/6.8.0/mingw_64/mkspecs/features/build_pass.prf
 	$(QMAKE) -o Makefile ..\..\reservation.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 C:/Qt/6.8.0/mingw_64/mkspecs/features/spec_pre.prf:
 C:/Qt/6.8.0/mingw_64/mkspecs/features/device_config.prf:
@@ -477,12 +485,20 @@ C:/Qt/6.8.0/mingw_64/mkspecs/features/exceptions.prf:
 C:/Qt/6.8.0/mingw_64/mkspecs/features/yacc.prf:
 C:/Qt/6.8.0/mingw_64/mkspecs/features/lex.prf:
 ../../reservation.pro:
+C:/Qt/6.8.0/mingw_64/lib/Qt6Quick.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6Charts.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6OpenGLWidgets.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6OpenGL.prl:
 C:/Qt/6.8.0/mingw_64/lib/Qt6Widgets.prl:
 C:/Qt/6.8.0/mingw_64/lib/Qt6Gui.prl:
 C:/Qt/6.8.0/mingw_64/lib/Qt6Sql.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6QmlMeta.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6QmlModels.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6QmlWorkerScript.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6Qml.prl:
+C:/Qt/6.8.0/mingw_64/lib/Qt6Network.prl:
 C:/Qt/6.8.0/mingw_64/lib/Qt6Core.prl:
 C:/Qt/6.8.0/mingw_64/mkspecs/features/build_pass.prf:
-../../img.qrc:
 qmake: FORCE
 	@$(QMAKE) -o Makefile ..\..\reservation.pro -spec win32-g++ "CONFIG+=debug" "CONFIG+=qml_debug"
 

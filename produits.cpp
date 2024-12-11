@@ -1,53 +1,60 @@
 #include "produits.h"
+#include <QBuffer>
+#include <QByteArray> // Pour l'image
+#include <QDebug>
+#include <QImage>
+#include <QLabel>
 #include <QSqlDatabase>
 #include <QSqlError>
-#include <QDebug>
-#include <QByteArray> // Pour l'image
-#include <QImage>
-#include <QBuffer>
 #include <QSqlQuery>
-#include <QLabel>
-
-
-
+#include <QSqlQueryModel>
 // Default constructor
 produits::produits()
-    : CODE(0),
-    PRIX(0.0),
-    DATE_EXP(QDate(2000, 1, 1)),
-    QUANTITEE(0),
-    DESCRIPTION(""),
-    NOM(""),
-    TYPE(""),
-    IMAGE(){}
-
+    : CODE(0)
+    , PRIX(0.0)
+    , DATE_EXP(QDate(2000, 1, 1))
+    , QUANTITEE(0)
+    , DESCRIPTION("")
+    , NOM("")
+    , TYPE("")
+    , IMAGE()
+{}
 
 // Parameterized constructor
-produits::produits(int codeP, float prixP, QDate date_expP, int qteP, QString descP, QString nomP, QString typeP, const QString& imagePath)
-    : CODE(codeP),
-    PRIX(prixP),
-    DATE_EXP(date_expP),
-    QUANTITEE(qteP),
-    DESCRIPTION(descP),
-    NOM(nomP),
-    TYPE(typeP){
+produits::produits(int codeP,
+                   float prixP,
+                   QDate date_expP,
+                   int qteP,
+                   QString descP,
+                   QString nomP,
+                   QString typeP,
+                   const QString &imagePath)
+    : CODE(codeP)
+    , PRIX(prixP)
+    , DATE_EXP(date_expP)
+    , QUANTITEE(qteP)
+    , DESCRIPTION(descP)
+    , NOM(nomP)
+    , TYPE(typeP)
+{
     // Charger l'image et la convertir en QByteArray
     QImage image(imagePath);
     if (!image.isNull()) {
-    QByteArray byteArray;
-    QBuffer buffer(&byteArray);
-    buffer.open(QIODevice::WriteOnly);
-    image.save(&buffer, "PNG");
-    IMAGE = byteArray; // Attribuer les données de l'image
-} else {
-    qDebug() << "Image non valide : " << imagePath;
-    IMAGE.clear();
-}
+        QByteArray byteArray;
+        QBuffer buffer(&byteArray);
+        buffer.open(QIODevice::WriteOnly);
+        image.save(&buffer, "PNG");
+        IMAGE = byteArray; // Attribuer les données de l'image
+    } else {
+        qDebug() << "Image non valide : " << imagePath;
+        IMAGE.clear();
+    }
 }
 
 // Create
 
-bool produits::ajouter(const QString& imagePath) {
+bool produits::ajouter(const QString &imagePath)
+{
     QSqlQuery query;
 
     // Vérifiez que la base de données est bien ouverte
@@ -67,8 +74,9 @@ bool produits::ajouter(const QString& imagePath) {
     }
 
     // Préparer la requête d'insertion
-    query.prepare("INSERT INTO produits (CODE, NOM, PRIX, QUANTITEE, TYPE, DESCRIPTION, DATE_EXP, IMGAGE) "
-                  "VALUES (:code, :nom, :prix, :qte, :type, :desc, :date_exp, :image)");
+    query.prepare(
+        "INSERT INTO produits (CODE, NOM, PRIX, QUANTITEE, TYPE, DESCRIPTION, DATE_EXP, IMGAGE) "
+        "VALUES (:code, :nom, :prix, :qte, :type, :desc, :date_exp, :image)");
 
     // Liaison des valeurs
     query.bindValue(":code", CODE);
@@ -89,10 +97,8 @@ bool produits::ajouter(const QString& imagePath) {
     return true;
 }
 
-
-
-
-QByteArray produits::imageToByteArray(const QString& imagePath) {
+QByteArray produits::imageToByteArray(const QString &imagePath)
+{
     // Charger l'image depuis le chemin
     QImage image(imagePath);
     if (image.isNull()) {
@@ -104,7 +110,8 @@ QByteArray produits::imageToByteArray(const QString& imagePath) {
     QByteArray byteArray;
     QBuffer buffer(&byteArray);
     buffer.open(QIODevice::WriteOnly);
-    if (!image.save(&buffer, "PNG")) { // Vous pouvez remplacer "PNG" par le format souhaité (ex. "JPG").
+    if (!image.save(&buffer,
+                    "PNG")) { // Vous pouvez remplacer "PNG" par le format souhaité (ex. "JPG").
         qDebug() << "Failed to save image to QByteArray.";
         return QByteArray();
     }
@@ -112,10 +119,9 @@ QByteArray produits::imageToByteArray(const QString& imagePath) {
     return byteArray;
 }
 
-
-
 // Read
-std::unique_ptr<QSqlQueryModel> produits::afficher() {
+/*std::unique_ptr<QSqlQueryModel> produits::afficher()
+{
     auto model = std::make_unique<QSqlQueryModel>();
     model->setQuery("SELECT * FROM produits");
 
@@ -124,6 +130,22 @@ std::unique_ptr<QSqlQueryModel> produits::afficher() {
         return nullptr;
     }
     return model; // Use smart pointer for ownership management
+}*/
+std::unique_ptr<QSqlQueryModel> produits::afficher()
+{
+    auto model = std::make_unique<QSqlQueryModel>();
+
+    // Exécution de la requête SQL
+    model->setQuery("SELECT * FROM produits");
+
+    // Vérification des erreurs de la requête SQL
+    if (model->lastError().isValid()) {
+        qDebug() << "Query execution failed:" << model->lastError().text();
+        return nullptr;  // Retourner nullptr si la requête échoue
+    }
+
+    // Si la requête réussit, retourner le modèle
+    return model;
 }
 
 
@@ -142,42 +164,50 @@ std::unique_ptr<QSqlQueryModel> produits::afficher() {
     }
 }*/
 
-
-void produits::afficherImage(QLabel* label, int codeP) {
+void produits::afficherImage(QLabel *label, int codeP)
+{
     QByteArray imageData = getImageFromDatabase(codeP);
 
     if (!imageData.isEmpty()) {
         QPixmap pixmap;
         pixmap.loadFromData(imageData);
 
-        label->setPixmap(pixmap.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        label->setPixmap(
+            pixmap.scaled(label->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
     } else {
         label->clear(); // Efface l'image si aucune image n'est trouvée
     }
 }
 
-QByteArray produits::getImageFromDatabase(int codeP) {
+QByteArray produits::getImageFromDatabase(int codeP)
+{
     QSqlQuery query;
     query.prepare("SELECT IMAGE FROM produits WHERE CODE = :code");
     query.bindValue(":code", codeP);
 
     if (!query.exec()) {
         qDebug() << "Database query failed:" << query.lastError();
-        return QByteArray();  // Retourne un QByteArray vide en cas d'échec
+        return QByteArray(); // Retourne un QByteArray vide en cas d'échec
     }
 
     if (query.next()) {
-        return query.value("IMAGE").toByteArray();  // Récupère l'image sous forme de QByteArray
+        return query.value("IMAGE").toByteArray(); // Récupère l'image sous forme de QByteArray
     }
 
-    return QByteArray();  // Retourne un QByteArray vide si aucune image n'est trouvée
+    return QByteArray(); // Retourne un QByteArray vide si aucune image n'est trouvée
 }
-
 
 // Update
 
-
-bool produits::modifier(int codeP, float prixP, const QDate& dateP, int qteP, const QString& descP, const QString& nomP, const QString& typeP, const QByteArray& imageP) {
+bool produits::modifier(int codeP,
+                        float prixP,
+                        const QDate &dateP,
+                        int qteP,
+                        const QString &descP,
+                        const QString &nomP,
+                        const QString &typeP,
+                        const QByteArray &imageP)
+{
     QSqlQuery query;
 
     query.prepare("UPDATE produits SET PRIX = :prix, DATE_EXP = :date_exp, QUANTITEE = :qte, "
@@ -200,10 +230,9 @@ bool produits::modifier(int codeP, float prixP, const QDate& dateP, int qteP, co
     return true;
 }
 
-
-
 // Delete
-bool produits::supprimer(int codeP) {
+bool produits::supprimer(int codeP)
+{
     QSqlQuery query;
     query.prepare("DELETE FROM produits WHERE code = :code");
     query.bindValue(":code", codeP);
@@ -216,7 +245,8 @@ bool produits::supprimer(int codeP) {
 }
 
 // Search
-std::unique_ptr<QSqlQueryModel> produits::rechercher(int codeP) {
+std::unique_ptr<QSqlQueryModel> produits::rechercher(int codeP)
+{
     QSqlQuery query;
     query.prepare("SELECT * FROM produits WHERE code = :code");
     query.bindValue(":code", codeP);
@@ -231,8 +261,8 @@ std::unique_ptr<QSqlQueryModel> produits::rechercher(int codeP) {
     return model; // Return the model
 }
 
-
-std::unique_ptr<QSqlQueryModel> produits::trier(const QString& critere, const QString& ordre) {
+std::unique_ptr<QSqlQueryModel> produits::trier(const QString &critere, const QString &ordre)
+{
     auto model = std::make_unique<QSqlQueryModel>();
     QSqlQuery query;
 
@@ -252,10 +282,10 @@ std::unique_ptr<QSqlQueryModel> produits::trier(const QString& critere, const QS
     return model; // Retourne le modèle rempli avec les données triées
 }
 
-std::unique_ptr<QSqlQueryModel> produits::afficher2() {
+std::unique_ptr<QSqlQueryModel> produits::afficher2()
+{
     std::unique_ptr<QSqlQueryModel> model(new QSqlQueryModel);
-    QSqlQuery query("SELECT * FROM produits");  // Changez selon votre table
+    QSqlQuery query("SELECT * FROM produits"); // Changez selon votre table
     model->setQuery(query);
     return model;
 }
-

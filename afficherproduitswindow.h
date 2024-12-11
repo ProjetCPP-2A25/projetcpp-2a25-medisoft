@@ -1,8 +1,8 @@
 /*#ifndef AFFICHERPRODUITSWINDOW_H
 #define AFFICHERPRODUITSWINDOW_H
 
-#include <QWidget>
 #include <QTableWidget>
+#include <QWidget>
 #include "LesProduits .h"
 
 class AfficherProduitsWindow : public QWidget {

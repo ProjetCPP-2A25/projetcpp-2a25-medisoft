@@ -1,14 +1,15 @@
 #ifndef PRODUITS_H
 #define PRODUITS_H
 
+#include <QByteArray> // Pour l'image
+#include <QDate>
+#include <QLabel>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
 #include <QString>
-#include <QDate>
-#include <QByteArray> // Pour l'image
-#include <QLabel>
 
-class produits {
+class produits
+{
     int CODE;
     float PRIX;
     QDate DATE_EXP;
@@ -20,7 +21,7 @@ class produits {
 
 public:
     produits();
-    produits(int, float, QDate, int, QString, QString, QString, const QString& imagePath);
+    produits(int, float, QDate, int, QString, QString, QString, const QString &imagePath);
 
     int getcode() const { return CODE; }
     QString getdesc() const { return DESCRIPTION; }
@@ -32,8 +33,7 @@ public:
     QByteArray getimage() const { return IMAGE; } // Getter pour l'image
     QByteArray getImageFromDatabase(int codeP);
 
-    QByteArray imageToByteArray(const QString& imagePath);
-
+    QByteArray imageToByteArray(const QString &imagePath);
 
     void setcode(const int &codeP) { CODE = codeP; }
     void setprix(const float &prixP) { PRIX = prixP; }
@@ -44,21 +44,25 @@ public:
     void settype(const QString &typeP) { TYPE = typeP; }
     void setimage(const QByteArray &imageP) { IMAGE = imageP; } // Setter pour l'image
 
-
     //bool ajouter();
     // Déclarez la méthode ajouter avec le paramètre imagePath
-    bool ajouter(const QString& imagePath);
+    bool ajouter(const QString &imagePath);
 
     std::unique_ptr<QSqlQueryModel> afficher();
-    bool modifier(int codeP, float prixP, const QDate& dateP, int qteP, const QString& descP, const QString& nomP, const QString& typeP, const QByteArray& imageP) ;
+    bool modifier(int codeP,
+                  float prixP,
+                  const QDate &dateP,
+                  int qteP,
+                  const QString &descP,
+                  const QString &nomP,
+                  const QString &typeP,
+                  const QByteArray &imageP);
     bool supprimer(int);
     std::unique_ptr<QSqlQueryModel> rechercher(int);
-    std::unique_ptr<QSqlQueryModel> trier(const QString& critere, const QString& ordre);
-    void afficherImage(QLabel* label, int codeP);
+    std::unique_ptr<QSqlQueryModel> trier(const QString &critere, const QString &ordre);
+    void afficherImage(QLabel *label, int codeP);
 
     std::unique_ptr<QSqlQueryModel> afficher2();
-
-
 };
 
 #endif // PRODUITS_H

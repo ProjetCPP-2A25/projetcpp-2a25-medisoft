@@ -1,4 +1,4 @@
-#ifndef SERIALCOMMUNICATION_H
+/*#ifndef SERIALCOMMUNICATION_H
 #define SERIALCOMMUNICATION_H
 
 #include <QObject>
@@ -23,3 +23,5 @@ private:
 };
 
 #endif // SERIALCOMMUNICATION_H
+*/
+a

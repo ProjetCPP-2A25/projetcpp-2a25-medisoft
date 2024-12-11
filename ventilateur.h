@@ -1,4 +1,4 @@
-#ifndef VENTILATEUR_H
+/*#ifndef VENTILATEUR_H
 #define VENTILATEUR_H
 
 #include <QMainWindow>
@@ -25,5 +25,5 @@ signals:
 private:
     bool ventilateurStatus; // True si ventilateur ON, false si OFF
 };
-
+*/
 #endif // VENTILATEUR_H
