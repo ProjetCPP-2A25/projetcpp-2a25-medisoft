@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/ajout">
+        <file>ajouter.PNG</file>
+    </qresource>
+</RCC>
